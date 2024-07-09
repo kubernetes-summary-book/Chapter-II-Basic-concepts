@@ -1,7 +1,9 @@
 # Kubernetes II : Conceptos básicos
 
 # Clúster K8s local
+
 Para instalar un clúster de Kubernetes local podemos usar la misma aplicación Desktop de Docker:
+
 ![](./assets/img1.png)
 
 ![](./assets/img2.png)
@@ -16,6 +18,7 @@ Para instalar un clúster de Kubernetes local podemos usar la misma aplicación 
 
 
 ## Espacio de nombres
+
 En Kubernetes los objetos pueden pertenecer al clúster en si, o un espacio de nombre `namespace`.
 Los Namespace son como un cluster virtual dentro de kubernetes, es deicr, es una forma de poder separar los objetos los unos de los otros.
 ----> NAMESPACE POR PROYECTO O ORGANIZACIÓN <-----
@@ -33,11 +36,9 @@ Los Namespace son como un cluster virtual dentro de kubernetes, es deicr, es una
 ```
 
 ```bash Ver a que pertenece un objeto a namespace o cluster
+    kubectl api-resources
 ```
 
-```bash
-	kubectl api-resources  
-```
 
 
 ```bash
@@ -150,7 +151,7 @@ spec:
 ```bash
 	youneskabiri@Youness-MacBook-Pro files % kubectl apply -f object-deployment.yaml
 		deployment.apps/nginx-deployment created
-``
+```
 
 
 ## Cuotas de recursos
@@ -179,6 +180,3 @@ spec:
 - Autorización Basada en Roles
 - Politicas de Red
 - Contexto y Políticas de Seguridad
-
-
-
