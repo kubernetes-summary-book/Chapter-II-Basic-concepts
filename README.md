@@ -1,4 +1,4 @@
-# Kubernetes II : Conceptos básicos
+le# Kubernetes II : Conceptos básicos
 
 # Clúster K8s local
 
@@ -102,7 +102,8 @@ youneskabiri@Youness-MacBook-Pro ~ % kubectl get namespaces
 
 ### Configuración de objetos de forma imperativa: La forma imperativa es usando la CLI, es decir, interactundo con el clúster mediante comandos de la terminal.
 
-```bash Ejemplo:
+**Ejemplo**
+```bash
 	kubectl create namespace equip1
 ```
 
@@ -152,11 +153,124 @@ spec:
 	youneskabiri@Youness-MacBook-Pro files % kubectl apply -f object-deployment.yaml
 		deployment.apps/nginx-deployment created
 ```
+Una forma más legible para el ser humano a la hora de ver obtener información es con el flag **-o** que puede ser `.yaml` o `.json`.
+
+```bash
+    kubectl get deploment redis -o yaml
+```
+
+**Importante :** Si queremos hacer una simulación de la creación de un objeto en el clúster si efectuar dicha creación, usamos `dry-run=client`, de esta forma solo se simulará en cliente sin enviar los datos al servidor.
+
+```bash
+    kubectl run nginxpod --image nginx --dry-run=client
+```    
+
+    ----> [FLAG] --dry-run=client : No enviar cambios al clúster.
+	----> [FLAG] --dry-run=server : Se envia al cluster PERO NO se procesa = No cambiar estado.
 
 
 ## Cuotas de recursos
 
+Las quotas son mecanismos de control que permiten limitar los recursos consumidos por los Pods y los objetos de Kubernetes en un namespace específico.
+	
+	- `Computación`: Limita recursos de computo de un namespace.
+	- `Almacenamiento`: Limita recursos de almacenamiento dentro de un cluster.
+	- `Contador de objeto`: Limita el número de objetos que se pueden crear dentro de namespace.
+
+```bash
+    kubectl create ns cuotas
+```	
+
+```yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: miquota
+  namespace: cuotas
+spec:
+  hard:
+    count/pods: "1"
+    count/secrets: "1"
+    limits.memory: 1Gi
+```
+
+```bash
+    kubectl apply -f ns cuotas.yaml
+```		
+
+```bash
+    youneskabiri@Youness-MacBook-Pro files % kubectl create ns cuotas   
+        namespace/cuotas created
+    youneskabiri@Youness-MacBook-Pro files % kubectl apply -f quota.yaml
+        resourcequota/miquota created
+```
+
+**Obtener quota**
+```bash 
+    kubectl get quota -n cuotas	
+```
+
+**Crear Pod nginx en namespace cuota**
+```bash 
+    ubectl run pod1 --image nginx -n cuotas 
+```
+
+**Ver INFO de cuota**
+```bash 
+    kubectl describe quota -n cuotas
+```
+
 ## Etiquetas y anotaciones
+
+
+Las etiquetas (labels) y las anotaciones (annotations) son dos formas de adjuntar metadatos a los recursos dentro del clúster, pero tienen propósitos y características ligeramente diferentes:
+
+    - **Etiqueta (Label)** :
+      - Las etiquetas son pares clave-valor asociados a los recursos de Kubernetes.
+      - Se utilizan principalmente para identificar y organizar los recursos.
+      - Las etiquetas pueden ser usadas para seleccionar y filtrar recursos en consultas y búsquedas.
+      - Las etiquetas son flexibles y pueden ser cambiadas durante el ciclo de vida del recurso.
+ 
+        Ejemplo de uso: agrupar pods que pertenecen a una misma aplicación o entorno de desarrollo.**
+  
+
+    - **Anotación (Annotations)** :
+        - Las anotaciones también son pares clave-valor asociados a los recursos de Kubernetes.
+        - Se utilizan para adjuntar metadatos adicionales que `NO son utilizados para identificar o seleccionar los recursos`.
+        - Las anotaciones pueden contener información como **timestamps, versiones, herramientas de seguimiento, políticas de respaldo, etc**.
+        - A diferencia de las etiquetas, **las anotaciones no son utilizadas directamente por Kubernetes** para la gestión de recursos, sino que pueden ser utilizadas por herramientas de terceros o scripts personalizados.
+    
+        Ejemplo de uso: almacenar información de auditoría, información de configuración específica de la aplicación, etc.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: example-label
+  app: nginx
+spec:
+  container:
+  - name: nginx
+    image: nginx
+```
+
+En este ejemplo se muestra la definición de un Pod con las etiquetas entorno y app.
+
+**Ver contenedores con sus labels**
+```bash 
+    kubectl get po --show-labels
+```
+
+**Añadir nueva etiqueta a un Pod llamado `nginxpod`**
+```bash 
+    kubectl label pod nginxpod version=1.0
+```
+
+**Modificar un label**
+```bash 
+    kubectl label pod nginxpod version=2.0 --overwrite
+```
+
 
 ## Authors
 
